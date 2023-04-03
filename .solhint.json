@@ -1,0 +1,14 @@
+{
+  "extends": "solhint:recommended",
+  "rules": {
+    "mark-callable-contracts": "off",
+    "no-empty-blocks": "off",
+    "compiler-version": ["error", "0.8.17"],
+    "private-vars-leading-underscore": "error",
+    "bracket-align": "off",
+    "reason-string": "off",
+    "not-rely-on-time": "off",
+    "no-inline-assembly": "off",
+    "check-send-result": "off"
+  }
+}
