@@ -3,6 +3,7 @@ require('@nomiclabs/hardhat-waffle');
 require('hardhat-gas-reporter');
 require('solidity-coverage');
 require('@nomiclabs/hardhat-etherscan');
+require('@openzeppelin/hardhat-upgrades');
 
 const DEFAULT_MNEMONIC = 'test test test test test test test test test test test junk';
 
@@ -121,15 +122,6 @@ module.exports = {
     },
     polygonZKEVMTestnet: {
       url: "https://rpc.public.zkevm-test.net",
-      accounts: {
-        mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
-        path: "m/44'/60'/0'/0",
-        initialIndex: 0,
-        count: 20,
-      },
-    },
-    polygonZKEVMInternal: {
-      url: "https://rpc.internal.zkevm-test.net/",
       accounts: {
         mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
         path: "m/44'/60'/0'/0",

@@ -17,15 +17,18 @@ describe('PolygonZkEVMBridge Contract', () => {
 
     let polygonZkEVMGlobalExitRoot;
     let polygonZkEVMBridgeContract;
-    let tokenContract;
+
+    let nftBridgeContract;
+    let nftContract;
 
     const tokenName = 'Matic Token';
     const tokenSymbol = 'MATIC';
-    const decimals = 18;
+    const baseTokenURL = "https://url.test";
+    
     const tokenInitialBalance = ethers.utils.parseEther('20000000');
     const metadataToken = ethers.utils.defaultAbiCoder.encode(
-        ['string', 'string', 'uint8'],
-        [tokenName, tokenSymbol, decimals],
+        ['string', 'string', 'string'],
+        [tokenName, tokenSymbol, baseTokenURL],
     );
 
     const networkIDMainnet = 0;
@@ -47,27 +50,45 @@ describe('PolygonZkEVMBridge Contract', () => {
         // deploy global exit root manager
         const PolygonZkEVMGlobalExitRootFactory = await ethers.getContractFactory('PolygonZkEVMGlobalExitRoot');
         polygonZkEVMGlobalExitRoot = await PolygonZkEVMGlobalExitRootFactory.deploy(rollup.address, polygonZkEVMBridgeContract.address);
-
         await polygonZkEVMBridgeContract.initialize(networkIDMainnet, polygonZkEVMGlobalExitRoot.address, polygonZkEVMAddress);
 
-        // deploy token
-        const maticTokenFactory = await ethers.getContractFactory('ERC20PermitMock');
-        tokenContract = await maticTokenFactory.deploy(
+
+        // deploy erc721 token
+        const nftFactory = await ethers.getContractFactory('ERC721Mock');
+        nftContract = await nftFactory.deploy(
             tokenName,
             tokenSymbol,
-            deployer.address,
-            tokenInitialBalance,
+            baseTokenURL
         );
-        await tokenContract.deployed();
+        await nftContract.deployed();
+
+        // mint nft for owner
+        await nftContract.mint(deployer.address);
+
+        // deploy nft bridge
+        const nftBridgeFactory = await ethers.getContractFactory('ZkEVMNFTBridge');
+        nftBridgeContract = await nftBridgeFactory.deploy(
+            polygonZkEVMBridgeContract.address
+        );
+        await nftBridgeContract.deployed();
+        
     });
 
     it('should check the constructor parameters', async () => {
-        expect(await polygonZkEVMBridgeContract.globalExitRootManager()).to.be.equal(polygonZkEVMGlobalExitRoot.address);
-        expect(await polygonZkEVMBridgeContract.networkID()).to.be.equal(networkIDMainnet);
-        expect(await polygonZkEVMBridgeContract.polygonZkEVMaddress()).to.be.equal(polygonZkEVMAddress);
+        expect(await nftBridgeContract.polygonZkEVMBridge()).to.be.equal(polygonZkEVMBridgeContract.address);
+        expect(await nftBridgeContract.networkID()).to.be.equal(networkIDMainnet);
     });
 
-    it('should PolygonZkEVMBridge message and verify merkle proof', async () => {
+    it('should bridge NFT', async () => {
+        // Bridge nft
+
+        // uint32 destinationNetwork,
+        // address destinationAddress,
+        // address token,
+        // uint256 tokenId,
+        // bool forceUpdateGlobalExitRoot
+
+
         const depositCount = await polygonZkEVMBridgeContract.depositCount();
         const originNetwork = networkIDMainnet;
         const originAddress = deployer.address;

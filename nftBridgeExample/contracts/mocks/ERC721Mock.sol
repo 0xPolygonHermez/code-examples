@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract NFTBridge is ERC721, ERC721Enumerable, Ownable {
+contract ERC721Mock is ERC721, ERC721Enumerable, Ownable {
     // Base token URI, the tokenURI of every nft will be the concatenation of this with the tokenID
     string public baseTokenURI;
 

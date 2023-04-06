@@ -40,6 +40,7 @@
     "@nomiclabs/hardhat-waffle": "^2.0.5",
     "@openzeppelin/contracts": "4.8.2",
     "@openzeppelin/contracts-upgradeable": "4.8.2",
+    "@openzeppelin/hardhat-upgrades": "1.22.1",
     "@openzeppelin/test-helpers": "0.5.16",
     "dotenv": "^8.6.0",
     "eslint": "^8.36.0",
