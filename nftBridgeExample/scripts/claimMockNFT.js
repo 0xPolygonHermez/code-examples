@@ -5,8 +5,6 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const { ethers } = require('hardhat');
 
-
-
 const mainnetBridgeAddress = "0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe";
 const testnetBridgeAddress = "0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7";
 
@@ -47,8 +45,13 @@ async function main() {
     const bridgeFactoryZkeEVm = await ethers.getContractFactory('PolygonZkEVMBridge', deployer);
     const bridgeContractZkeVM = bridgeFactoryZkeEVm.attach(zkEVMBridgeContractAddress);
 
-    const depositAxions = await axios.get(getClaimsFromAcc + signerZkevm.address, { params: { limit: 100, offset: 0 } });
+    const depositAxions = await axios.get(getClaimsFromAcc + deployer.address, { params: { limit: 100, offset: 0 } });
     let depositsArray = depositAxions.data.deposits;
+
+    if (depositsArray.length == 0) {
+        console.log("Not ready yet!");
+        return;
+    }
 
     for (let i = 0; i < depositsArray.length; i++) {
         const currentDeposit = depositsArray[i];
@@ -58,7 +61,7 @@ async function main() {
             });
 
             const proof = proofAxios.data.proof;
-            const populatedTx = await bridgeContractZkeVM.populateTransaction.claimAsset(
+            const claimTx = await bridgeContractZkeVM.claimMessage(
                 proof.merkle_proof,
                 currentDeposit.deposit_cnt,
                 proof.main_exit_root,
@@ -68,20 +71,10 @@ async function main() {
                 currentDeposit.dest_net,
                 currentDeposit.dest_addr,
                 currentDeposit.amount,
-                currentDeposit.metadata, { gasPrice: 0 }
+                currentDeposit.metadata,
             );
-            const tx = {
-                gasLimit: 1500000,
-                data: populatedTx.data,
-                to: populatedTx.to,
-                gasPrice: populatedTx.gasPrice
-            }
-            try {
-                const sendTx = await signerZkevm.sendTransaction(tx);
-                console.log(sendTx)
-            } catch (error) {
-
-            }
+            console.log({ claimTx });
+            console.log(await claimTx.wait());
         }
     }
 }
