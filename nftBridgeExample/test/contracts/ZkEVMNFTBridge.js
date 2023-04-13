@@ -10,10 +10,16 @@ function calculateGlobalExitRoot(mainnetExitRoot, rollupExitRoot) {
     return ethers.utils.solidityKeccak256(['bytes32', 'bytes32'], [mainnetExitRoot, rollupExitRoot]);
 }
 
+function encodeMessageData(originNetwork, originTokenAddress, destinationAddress, tokenId, name, symbol, tokenURI) {
+    return ethers.utils.defaultAbiCoder.encode(
+        ['uint32', 'address', 'address', 'uint256', 'string', 'string', 'string'],
+        [originNetwork, originTokenAddress, destinationAddress, tokenId, name, symbol, tokenURI],
+    );
+}
+
 describe('PolygonZkEVMBridge Contract', () => {
     let deployer;
     let rollup;
-    let acc1;
 
     let polygonZkEVMGlobalExitRoot;
     let polygonZkEVMBridgeContract;
@@ -23,25 +29,18 @@ describe('PolygonZkEVMBridge Contract', () => {
 
     const tokenName = 'Matic Token';
     const tokenSymbol = 'MATIC';
-    const baseTokenURL = "https://url.test";
-    
-    const tokenInitialBalance = ethers.utils.parseEther('20000000');
-    const metadataToken = ethers.utils.defaultAbiCoder.encode(
-        ['string', 'string', 'string'],
-        [tokenName, tokenSymbol, baseTokenURL],
-    );
+    const baseTokenURL = 'https://url.test';
 
     const networkIDMainnet = 0;
     const networkIDRollup = 1;
 
-    const LEAF_TYPE_ASSET = 0;
     const LEAF_TYPE_MESSAGE = 1;
 
     const polygonZkEVMAddress = ethers.constants.AddressZero;
 
     beforeEach('Deploy contracts', async () => {
         // load signers
-        [deployer, rollup, acc1] = await ethers.getSigners();
+        [deployer, rollup] = await ethers.getSigners();
 
         // deploy PolygonZkEVMBridge
         const polygonZkEVMBridgeFactory = await ethers.getContractFactory('PolygonZkEVMBridge');
@@ -52,13 +51,12 @@ describe('PolygonZkEVMBridge Contract', () => {
         polygonZkEVMGlobalExitRoot = await PolygonZkEVMGlobalExitRootFactory.deploy(rollup.address, polygonZkEVMBridgeContract.address);
         await polygonZkEVMBridgeContract.initialize(networkIDMainnet, polygonZkEVMGlobalExitRoot.address, polygonZkEVMAddress);
 
-
         // deploy erc721 token
         const nftFactory = await ethers.getContractFactory('ERC721Mock');
         nftContract = await nftFactory.deploy(
             tokenName,
             tokenSymbol,
-            baseTokenURL
+            baseTokenURL,
         );
         await nftContract.deployed();
 
@@ -68,10 +66,9 @@ describe('PolygonZkEVMBridge Contract', () => {
         // deploy nft bridge
         const nftBridgeFactory = await ethers.getContractFactory('ZkEVMNFTBridge');
         nftBridgeContract = await nftBridgeFactory.deploy(
-            polygonZkEVMBridgeContract.address
+            polygonZkEVMBridgeContract.address,
         );
         await nftBridgeContract.deployed();
-        
     });
 
     it('should check the constructor parameters', async () => {
@@ -80,51 +77,85 @@ describe('PolygonZkEVMBridge Contract', () => {
     });
 
     it('should bridge NFT', async () => {
-        // Bridge nft
-
-        // uint32 destinationNetwork,
-        // address destinationAddress,
-        // address token,
-        // uint256 tokenId,
-        // bool forceUpdateGlobalExitRoot
-
-
-        const depositCount = await polygonZkEVMBridgeContract.depositCount();
+        // Encode message
         const originNetwork = networkIDMainnet;
-        const originAddress = deployer.address;
-        const amount = ethers.utils.parseEther('10');
+        const originTokenAddress = nftContract.address;
+        const tokenId = 1;
         const destinationNetwork = networkIDRollup;
         const destinationAddress = deployer.address;
 
-        const metadata = metadataToken;
-        const metadataHash = ethers.utils.solidityKeccak256(['bytes'], [metadata]);
-        const rollupExitRoot = await polygonZkEVMGlobalExitRoot.lastRollupExitRoot();
+        const tokenURI = baseTokenURL + tokenId;
+        // Encode message
+        const message = encodeMessageData(
+            originNetwork,
+            originTokenAddress,
+            destinationAddress,
+            tokenId,
+            tokenName,
+            tokenSymbol,
+            tokenURI,
+        );
 
         // pre compute root merkle tree in Js
         const height = 32;
         const merkleTree = new MerkleTreeBridge(height);
+
+        // bridge message between nftBridgeContract deployed on both networks
+        const originAddressLeaf = nftBridgeContract.address;
+        const destinationAddressLeaf = nftBridgeContract.address;
+        const amountLeaf = 0; // 0 ehters
+        const messageHash = ethers.utils.solidityKeccak256(['bytes'], [message]);
+
         const leafValue = getLeafValue(
             LEAF_TYPE_MESSAGE,
             originNetwork,
-            originAddress,
+            originAddressLeaf,
             destinationNetwork,
-            destinationAddress,
-            amount,
-            metadataHash,
+            destinationAddressLeaf,
+            amountLeaf,
+            messageHash,
         );
         merkleTree.add(leafValue);
         const rootJSMainnet = merkleTree.getRoot();
 
-        await expect(polygonZkEVMBridgeContract.bridgeMessage(destinationNetwork, destinationAddress, true, metadata, { value: amount }))
+        const depositCount = await polygonZkEVMBridgeContract.depositCount();
+        const rollupExitRoot = await polygonZkEVMGlobalExitRoot.lastRollupExitRoot();
+
+        // Owner do not approve tokens
+        await expect(nftBridgeContract.bridgeNFT(
+            destinationNetwork,
+            destinationAddress,
+            nftContract.address,
+            tokenId,
+            true,
+        )).to.be.revertedWith('ERC721: caller is not token owner or approved');
+
+        // Approve tokens
+        await nftContract.approve(nftBridgeContract.address, tokenId);
+
+        await expect(nftBridgeContract.bridgeNFT(
+            destinationNetwork,
+            destinationAddress,
+            nftContract.address,
+            tokenId,
+            true,
+        ))
+            .to.emit(nftBridgeContract, 'BridgeNFT')
+            .withArgs(
+                destinationNetwork,
+                nftContract.address,
+                destinationAddress,
+                tokenId,
+            )
             .to.emit(polygonZkEVMBridgeContract, 'BridgeEvent')
             .withArgs(
                 LEAF_TYPE_MESSAGE,
                 originNetwork,
-                originAddress,
+                originAddressLeaf,
                 destinationNetwork,
-                destinationAddress,
-                amount,
-                metadata,
+                destinationAddressLeaf,
+                amountLeaf,
+                message,
                 depositCount,
             );
 
@@ -150,34 +181,49 @@ describe('PolygonZkEVMBridge Contract', () => {
     });
 
     it('should claim message', async () => {
-        // Add a claim leaf to rollup exit tree
-        const originNetwork = networkIDMainnet;
-        const tokenAddress = ethers.constants.AddressZero; // ether
-        const amount = ethers.utils.parseEther('10');
+        // Encode message from another network
+        const originNetwork = networkIDRollup;
+        const originTokenAddress = nftContract.address;
+        const tokenId = 1;
         const destinationNetwork = networkIDMainnet;
         const destinationAddress = deployer.address;
 
-        const metadata = '0x176923791298713271763697869132'; // since is ether does not have metadata
-        const metadataHash = ethers.utils.solidityKeccak256(['bytes'], [metadata]);
-
-        const mainnetExitRoot = await polygonZkEVMGlobalExitRoot.lastMainnetExitRoot();
+        const tokenURI = baseTokenURL + tokenId;
+        // Encode message
+        const message = encodeMessageData(
+            originNetwork,
+            originTokenAddress,
+            destinationAddress,
+            tokenId,
+            tokenName,
+            tokenSymbol,
+            tokenURI,
+        );
 
         // compute root merkle tree in Js
         const height = 32;
         const merkleTree = new MerkleTreeBridge(height);
+
+        // Compute leaf
+        const originAddressLeaf = nftBridgeContract.address;
+        const destinationAddressLeaf = nftBridgeContract.address;
+        const amountLeaf = 0; // 0 ehters
+        const messageHash = ethers.utils.solidityKeccak256(['bytes'], [message]);
+
         const leafValue = getLeafValue(
             LEAF_TYPE_MESSAGE,
             originNetwork,
-            tokenAddress,
+            originAddressLeaf,
             destinationNetwork,
-            destinationAddress,
-            amount,
-            metadataHash,
+            destinationAddressLeaf,
+            amountLeaf,
+            messageHash,
         );
         merkleTree.add(leafValue);
 
         // check merkle root with SC
         const rootJSRollup = merkleTree.getRoot();
+        const mainnetExitRoot = await polygonZkEVMGlobalExitRoot.lastMainnetExitRoot();
 
         // add rollup Merkle root
         await expect(polygonZkEVMGlobalExitRoot.connect(rollup).updateExitRoot(rootJSRollup))
@@ -204,119 +250,80 @@ describe('PolygonZkEVMBridge Contract', () => {
             rootJSRollup,
         )).to.be.equal(true);
 
-        /*
-         * claim
-         * Can't claim a message as an assets
-         */
-        await expect(polygonZkEVMBridgeContract.claimAsset(
-            proof,
-            index,
-            mainnetExitRoot,
-            rollupExitRootSC,
-            originNetwork,
-            tokenAddress,
-            destinationNetwork,
-            destinationAddress,
-            amount,
-            metadata,
-        )).to.be.revertedWith('InvalidSmtProof');
+        // Try to call onMessageReceived direct
+        await expect(nftBridgeContract.onMessageReceived(
+            originTokenAddress,
+            networkIDRollup,
+            message,
+        )).to.be.revertedWith('TokenWrapped::onlyBridge: Not PolygonZkEVMBridge');
 
-        /*
-         * claim
-         * Can't claim without ether
-         */
+        // Expect messages only from nftBridgeContract of another networks
+        await expect(nftBridgeContract.onMessageReceived(
+            deployer.address,
+            networkIDRollup,
+            message,
+        )).to.be.revertedWith('TokenWrapped::onlyBridge: Not PolygonZkEVMBridge');
+
+        // Precalculate the new wrapped token
+        const newWrappedAddress = await nftBridgeContract.precalculatedWrapperAddress(
+            originNetwork,
+            originTokenAddress,
+            tokenName,
+            tokenSymbol,
+        );
+
+        // Claim message
         await expect(polygonZkEVMBridgeContract.claimMessage(
             proof,
             index,
             mainnetExitRoot,
             rollupExitRootSC,
             originNetwork,
-            tokenAddress,
+            originAddressLeaf,
             destinationNetwork,
-            destinationAddress,
-            amount,
-            metadata,
-        )).to.be.revertedWith('MessageFailed');
-
-        const balanceDeployer = await ethers.provider.getBalance(deployer.address);
-        /*
-         * Create a deposit to add ether to the PolygonZkEVMBridge
-         * Check deposit amount ether asserts
-         */
-        await expect(polygonZkEVMBridgeContract.bridgeAsset(
-            networkIDRollup,
-            destinationAddress,
-            amount,
-            tokenAddress,
-            true,
-            '0x',
-            { value: ethers.utils.parseEther('100') },
-        )).to.be.revertedWith('AmountDoesNotMatchMsgValue');
-
-        // Check mainnet destination assert
-        await expect(polygonZkEVMBridgeContract.bridgeAsset(
-            networkIDMainnet,
-            destinationAddress,
-            amount,
-            tokenAddress,
-            true,
-            '0x',
-            { value: amount },
-        )).to.be.revertedWith('DestinationNetworkInvalid');
-
-        // This is used just to pay ether to the PolygonZkEVMBridge smart contract and be able to claim it afterwards.
-        expect(await polygonZkEVMBridgeContract.bridgeAsset(
-            networkIDRollup,
-            destinationAddress,
-            amount,
-            tokenAddress,
-            true,
-            '0x',
-            { value: amount },
-        ));
-
-        // Check balances before claim
-        expect(await ethers.provider.getBalance(polygonZkEVMBridgeContract.address)).to.be.equal(amount);
-        expect(await ethers.provider.getBalance(deployer.address)).to.be.lte(balanceDeployer.sub(amount));
-
-        // Check mainnet destination assert
-        await expect(polygonZkEVMBridgeContract.claimAsset(
-            proof,
-            index,
-            mainnetExitRoot,
-            rollupExitRootSC,
-            originNetwork,
-            tokenAddress,
-            destinationNetwork,
-            destinationAddress,
-            amount,
-            metadata,
-        )).to.be.revertedWith('InvalidSmtProof');
-
-        await expect(polygonZkEVMBridgeContract.claimMessage(
-            proof,
-            index,
-            mainnetExitRoot,
-            rollupExitRootSC,
-            originNetwork,
-            tokenAddress,
-            destinationNetwork,
-            destinationAddress,
-            amount,
-            metadata,
+            destinationAddressLeaf,
+            amountLeaf,
+            message,
         ))
             .to.emit(polygonZkEVMBridgeContract, 'ClaimEvent')
             .withArgs(
                 index,
                 originNetwork,
-                tokenAddress,
+                originAddressLeaf,
+                destinationAddressLeaf,
+                amountLeaf,
+            )
+            .to.emit(nftBridgeContract, 'NewWrappedToken')
+            .withArgs(
+                originNetwork,
+                originTokenAddress,
+                newWrappedAddress,
+                tokenName,
+                tokenSymbol,
+            )
+            .to.emit(nftBridgeContract, 'ClaimNFT')
+            .withArgs(
+                originNetwork,
+                originTokenAddress,
                 destinationAddress,
-                amount,
+                tokenId,
             );
 
-        // Check balances after claim
-        expect(await ethers.provider.getBalance(polygonZkEVMBridgeContract.address)).to.be.equal(ethers.utils.parseEther('0'));
-        expect(await ethers.provider.getBalance(deployer.address)).to.be.lte(balanceDeployer);
+        /*
+         *  This will trigget the deployment of new nft contract aswell of the mint of the nft bridged
+         * Check new nft minted
+         */
+        const nftWrappedFactory = await ethers.getContractFactory('ERC721Wrapped');
+        const newNftContract = nftWrappedFactory.attach(newWrappedAddress);
+
+        // Wrapped nft Contract checks
+        expect(await newNftContract.totalSupply()).to.be.equal(1);
+        expect(await newNftContract.name()).to.be.equal(tokenName);
+        expect(await newNftContract.symbol()).to.be.equal(tokenSymbol);
+
+        // New minted nft checks
+        expect(await newNftContract.ownerOf(tokenId)).to.be.equal(destinationAddress);
+        expect(await newNftContract.tokenURI(tokenId)).to.be.equal(tokenURI);
 
         // Can't claim because nullifier
         await expect(polygonZkEVMBridgeContract.claimAsset(
@@ -325,11 +332,11 @@ describe('PolygonZkEVMBridge Contract', () => {
             mainnetExitRoot,
             rollupExitRootSC,
             originNetwork,
-            tokenAddress,
+            originAddressLeaf,
             destinationNetwork,
-            destinationAddress,
-            amount,
-            metadata,
+            destinationAddressLeaf,
+            amountLeaf,
+            message,
         )).to.be.revertedWith('AlreadyClaimed');
     });
 });

@@ -56,7 +56,7 @@ module.exports = {
       },
       {
         version: "0.4.19",
-        settings: { 
+        settings: {
           optimizer: {
             enabled: false,
           }
@@ -147,7 +147,7 @@ module.exports = {
   etherscan: {
     apiKey: {
       polygonZKEVMTestnet: `${process.env.ETHERSCAN_ZKEVM_API_KEY}`,
-      polygonZKEVMMainnet: `${process.env.ETHERSCAN_ZKEVM_MAINNET_API_KEY}`,
+      polygonZKEVMMainnet: `${process.env.ETHERSCAN_ZKEVM_API_KEY}`,
       goerli: `${process.env.ETHERSCAN_API_KEY}`,
       mainnet: `${process.env.ETHERSCAN_API_KEY}`
     },

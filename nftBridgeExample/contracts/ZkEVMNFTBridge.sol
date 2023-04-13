@@ -8,12 +8,10 @@ import "./polygonZKEVMContracts/interfaces/IBridgeMessageReceiver.sol";
 import "./polygonZKEVMContracts/interfaces/IPolygonZkEVMBridge.sol";
 import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 
-
 /**
  * ZkEVMNFTBridge is an example contract to use the message layer of the PolygonZkEVMBridge to bridge NFTs
  */
-contract ZkEVMNFTBridge is ERC721Holder, IBridgeMessageReceiver
-{
+contract ZkEVMNFTBridge is ERC721Holder, IBridgeMessageReceiver {
     // Wrapped Token information struct
     struct TokenInformation {
         uint32 originNetwork;
@@ -86,7 +84,7 @@ contract ZkEVMNFTBridge is ERC721Holder, IBridgeMessageReceiver
         address token,
         uint256 tokenId,
         bool forceUpdateGlobalExitRoot
-    ) public virtual {        
+    ) public virtual {
         uint32 originNetwork = networkID;
         address originTokenAddress = token;
 
@@ -101,26 +99,27 @@ contract ZkEVMNFTBridge is ERC721Holder, IBridgeMessageReceiver
             originNetwork = tokenInfo.originNetwork;
             originTokenAddress = tokenInfo.originTokenAddress;
         } else {
-            IERC721(token).transferFrom(
-                msg.sender,
-                address(this),
-                tokenId
-            );
+            IERC721(token).transferFrom(msg.sender, address(this), tokenId);
         }
 
         bytes memory messageData = abi.encode(
-                originNetwork,
-                originTokenAddress,
-                destinationAddress,
-                tokenId,
-                _safeName(token),
-                _safeSymbol(token),
-                _safeTokenURI(token, tokenId)
-            );
+            originNetwork,
+            originTokenAddress,
+            destinationAddress,
+            tokenId,
+            _safeName(token),
+            _safeSymbol(token),
+            _safeTokenURI(token, tokenId)
+        );
 
         // It's supposed that both contracts will be deployed with the same address
         // Can be achieve using the same nonce on CREATE, or using CREATE2 patterns
-        polygonZkEVMBridge.bridgeMessage(destinationNetwork, address(this), forceUpdateGlobalExitRoot, messageData);
+        polygonZkEVMBridge.bridgeMessage(
+            destinationNetwork,
+            address(this),
+            forceUpdateGlobalExitRoot,
+            messageData
+        );
 
         emit BridgeNFT(destinationNetwork, token, destinationAddress, tokenId);
     }
@@ -135,7 +134,7 @@ contract ZkEVMNFTBridge is ERC721Holder, IBridgeMessageReceiver
         address originAddress,
         uint32 originNetwork,
         bytes memory data
-    ) override external payable {
+    ) external payable override {
         // Can only be called by the bridge
         require(
             msg.sender == address(polygonZkEVMBridge),
@@ -146,7 +145,7 @@ contract ZkEVMNFTBridge is ERC721Holder, IBridgeMessageReceiver
         // It's supposed to be deployed with the same address in both networks
         require(
             address(this) == originAddress,
-            "TokenWrapped::onlyBridge: Not PolygonZkEVMBridge"
+            "TokenWrapped::onlyBridge: Not ZkEVMNFTBridge"
         );
 
         // Decode data
@@ -160,21 +159,13 @@ contract ZkEVMNFTBridge is ERC721Holder, IBridgeMessageReceiver
             string memory tokenURI
         ) = abi.decode(
                 data,
-                (
-                    uint32,
-                    address,
-                    address,
-                    uint256,
-                    string,
-                    string,
-                    string
-                )
-        );
+                (uint32, address, address, uint256, string, string, string)
+            );
 
         // Transfer NFTs
         if (originTokenNetwork == networkID) {
             // The token is an ERC721 from this network
-             IERC721(originTokenAddress).transferFrom(
+            IERC721(originTokenAddress).transferFrom(
                 address(this),
                 destinationAddress,
                 tokenId
@@ -208,15 +199,18 @@ contract ZkEVMNFTBridge is ERC721Holder, IBridgeMessageReceiver
                     originTokenNetwork,
                     originTokenAddress,
                     address(newWrappedToken),
-                    name, 
+                    name,
                     symbol
                 );
             } else {
                 // Use the existing wrapped erc721
-                ERC721Wrapped(wrappedToken).mint(destinationAddress, tokenId, tokenURI);
+                ERC721Wrapped(wrappedToken).mint(
+                    destinationAddress,
+                    tokenId,
+                    tokenURI
+                );
             }
         }
-        
 
         emit ClaimNFT(
             originTokenNetwork,
@@ -226,7 +220,6 @@ contract ZkEVMNFTBridge is ERC721Holder, IBridgeMessageReceiver
         );
     }
 
-   
     /**
      * @notice Returns the precalculated address of a wrapper using the token information
      * Note Updating the metadata of a token is not supported.
@@ -304,13 +297,15 @@ contract ZkEVMNFTBridge is ERC721Holder, IBridgeMessageReceiver
         return success ? _returnDataToString(data) : "NO_SYMBOL";
     }
 
-
     /**
      * @notice Provides a safe ERC721.tokenURI version which returns '' as fallback value.
      * @param token The address of the ERC-721 token contract
      * @param tokenId Token Id
      */
-    function _safeTokenURI(address token, uint256 tokenId) internal view returns (string memory) {
+    function _safeTokenURI(
+        address token,
+        uint256 tokenId
+    ) internal view returns (string memory) {
         (bool success, bytes memory data) = address(token).staticcall(
             abi.encodeCall(IERC721Metadata.tokenURI, (tokenId))
         );
