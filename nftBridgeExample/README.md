@@ -71,6 +71,7 @@ npm run bridge:mockNFT:goerli
 ```
 
 - Now we have to wait until the message is forwarded to L2, there's the final script that will check it and if it's ready will actually claim the NFT in the other layer:
+  The same way as the last script, if you deploy your own nftBridge you will have the update the `deployedNftBridgeAddress`
 
 ```
 npm run claim:mockNFT:polygonZKEVMTestnet

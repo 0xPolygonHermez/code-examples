@@ -11,6 +11,8 @@ const testnetBridgeAddress = "0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7";
 const mekrleProofString = "/merkle-proof"
 const getClaimsFromAcc = "/bridges/"
 
+const deployedNftBridgeAddress = "0xd3b1d467694d4964E3d777e5f2baCcf9Aee930b0";
+
 async function main() {
     const currentProvider = ethers.provider;
     let deployer;
@@ -23,7 +25,6 @@ async function main() {
     } else {
         [deployer] = (await ethers.getSigners());
     }
-
 
     let zkEVMBridgeContractAddress, baseURL;
     const networkName = process.env.HARDHAT_NETWORK;
@@ -45,7 +46,7 @@ async function main() {
     const bridgeFactoryZkeEVm = await ethers.getContractFactory('PolygonZkEVMBridge', deployer);
     const bridgeContractZkeVM = bridgeFactoryZkeEVm.attach(zkEVMBridgeContractAddress);
 
-    const depositAxions = await axios.get(getClaimsFromAcc + deployer.address, { params: { limit: 100, offset: 0 } });
+    const depositAxions = await axios.get(getClaimsFromAcc + deployedNftBridgeAddress, { params: { limit: 100, offset: 0 } });
     let depositsArray = depositAxions.data.deposits;
 
     if (depositsArray.length == 0) {
@@ -73,8 +74,9 @@ async function main() {
                 currentDeposit.amount,
                 currentDeposit.metadata,
             );
-            console.log({ claimTx });
-            console.log(await claimTx.wait());
+            console.log("claim message succesfully send: ", claimTx.hash);
+            await claimTx.wait();
+            console.log("claim message succesfully mined");
         }
     }
 }
