@@ -6,13 +6,14 @@ This folder provides an example on how to **bridge NFTs** using the message laye
 - npm version: >= 7.x
 
 ## Deployment NFT Bridge
-There are two bridges already deployed on goerli <--> polygonZkEVMTestnet networks:
+### Note
+There are two bridges already deployed on `goerli <--> polygonZkEVMTestnet` networks:
 - `0xd3b1d467694d4964E3d777e5f2baCcf9Aee930b0`
 - `0x6D792cb4d69cC3E1e9A2282106Cc0491E796655e`
 
-Deploying a new NFT-bridge is not necessary in order to bridge an NFT. Therefore, you can skip this section and go directly to `Using the NFT bridge` section in this document.
+Deploying a new nft-bridge is not necessary in order to bridge a NFT. Therefore, you can skip this section and go directly to `Using the NFT bridge` section in this document.
 
-
+### Deployment
 In project root execute:
 ```
 npm i
@@ -20,7 +21,7 @@ cp .env.example .env
 ```
 
 Fill `.env` with your `MNEMONIC` or `PVTKEY` and `INFURA_PROJECT_ID`
-If you want to verify the contracts also fill the `ETHERSCAN_API_KEY` and `ETHERSCAN_ZKEVM_API_KEY`
+If you want to verify the contracts also fill in the `ETHERSCAN_API_KEY` and `ETHERSCAN_ZKEVM_API_KEY`
 
 > Deterministic deployment could be used to have the same address in both networks
 > Usually, this would be performed using a `create2` schema. For simplicity, it is used the same address/nonce in both networks to deploy the contract
@@ -29,14 +30,14 @@ If you want to verify the contracts also fill the `ETHERSCAN_API_KEY` and `ETHER
 
 To deploy use:`npm run deploy:nftBridge:${network}`
 
-As example for goerli testnet:
+As example for goerli/polygonZKEVMTestnet testnets:
 ```
 npm run deploy:nftBridge:goerli
 npm run deploy:nftBridge:polygonZKEVMTestnet
 ```
 
-In the deployment we will find the results on `${networkName}_output.json`
-Double check that both address must be the same.
+Once the deployment is finished, we will find the results on `${networkName}_output.json`
+Double check that both address should be the same.
 
 To verify contracts use `npm run verify:nftBridge:${network}`
 ```
@@ -57,16 +58,15 @@ npm run deploy:mockNFT:goerli
 npm run verify:mockNFT:goerli
 ```
 
-- To use the bridge you can use the already deployed one or deploy one yourself following the `Deployment NFT Bridge` section
-- If you want to use your own bridge:
-    - Go to `scripts/bridgeMockNFT.js` and update the `deployedNftBridgeAddress` with the previously deployed bridgeNFT
+- To use the bridge you can use one of the already deployed ones or deploy one yourself following the `Deployment NFT Bridge:Deployment` section
+> If you want to use your own bridge. Go to `scripts/bridgeMockNFT.js` and update the `deployedNftBridgeAddress` with the previously deployed bridgeNFT
 
 ```
 npm run bridge:mockNFT:goerli
 ```
 
-- Now we have to wait until the message is forwarded to L2, there's the final script that will check it and if it's ready will actually claim the NFT in the other layer:
-  - The same way as the last script, if you deploy your own nftBridge you will have the update the `deployedNftBridgeAddress`
+- Now we have to wait until the message is forwarded to L2, there is a final script that will check it if the claim is ready. If it is ready, it will actually claim the NFT in the other layer:
+> The same way as the previous step, if you deploy your own nftBridge you will have the update the `deployedNftBridgeAddress`
 
 ```
 npm run claim:mockNFT:polygonZKEVMTestnet
