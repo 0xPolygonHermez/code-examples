@@ -1,7 +1,7 @@
 {
   "name": "@0xpolygonhermez/code-examples",
   "description": "nft bridge example for polygon zkEVM",
-  "version": "0.1.0.0",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/0xPolygonHermez/code-examples.git"

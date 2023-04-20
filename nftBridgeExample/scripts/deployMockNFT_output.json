@@ -1,6 +1,0 @@
-{
- "tokenName": "test NFT",
- "tokenSymbol": "TNFT",
- "baseTokenURL": "http://example",
- "nftMockcontract": "0xeA40c9909F7616cAD337CDE92D9522b4a25e2d57"
-}

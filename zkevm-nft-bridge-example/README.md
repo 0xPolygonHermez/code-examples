@@ -1,0 +1,76 @@
+# zkEVM NFT bridge example
+This folder provides an example on how to **bridge NFTs** using the message layer that `polygonZKEVMBridge` implements
+
+## Requirements
+- node version: >= 14.x
+- npm version: >= 7.x
+
+## Deployment NFT Bridge
+There are two bridges already deployed on goerli <--> polygonZkEVMTestnet networks:
+- `0xd3b1d467694d4964E3d777e5f2baCcf9Aee930b0`
+- `0x6D792cb4d69cC3E1e9A2282106Cc0491E796655e`
+
+Deploying a new NFT-bridge is not necessary in order to bridge an NFT. Therefore, you can skip this section and go directly to `Using the NFT bridge` section in this document.
+
+
+In project root execute:
+```
+npm i
+cp .env.example .env
+```
+
+Fill `.env` with your `MNEMONIC` or `PVTKEY` and `INFURA_PROJECT_ID`
+If you want to verify the contracts also fill the `ETHERSCAN_API_KEY` and `ETHERSCAN_ZKEVM_API_KEY`
+
+> Deterministic deployment could be used to have the same address in both networks
+> Usually, this would be performed using a `create2` schema. For simplicity, it is used the same address/nonce in both networks to deploy the contract
+
+> Script will detect automatically the `bridgeAddress` to be used depending on the network
+
+To deploy use:`npm run deploy:nftBridge:${network}`
+
+As example for goerli testnet:
+```
+npm run deploy:nftBridge:goerli
+npm run deploy:nftBridge:polygonZKEVMTestnet
+```
+
+In the deployment we will find the results on `${networkName}_output.json`
+Double check that both address must be the same.
+
+To verify contracts use `npm run verify:nftBridge:${network}`
+```
+npm run verify:nftBridge:goerli
+npm run verify:nftBridge:polygonZKEVMTestnet
+```
+
+## Using the NFT bridge
+In order to use the bridge, some scripts are provided:
+
+- Deploy an NFT using:
+```
+npm run deploy:mockNFT:goerli
+```
+
+- Optionally verify it on etherscan:
+```
+npm run verify:mockNFT:goerli
+```
+
+- To use the bridge you can use the already deployed one or deploy one yourself following the `Deployment NFT Bridge` section
+- If you want to use your own bridge:
+    - Go to `scripts/bridgeMockNFT.js` and update the `deployedNftBridgeAddress` with the previously deployed bridgeNFT
+
+```
+npm run bridge:mockNFT:goerli
+```
+
+- Now we have to wait until the message is forwarded to L2, there's the final script that will check it and if it's ready will actually claim the NFT in the other layer:
+  - The same way as the last script, if you deploy your own nftBridge you will have the update the `deployedNftBridgeAddress`
+
+```
+npm run claim:mockNFT:polygonZKEVMTestnet
+```
+
+## Example nft bridge transaction
+https://testnet-zkevm.polygonscan.com/tx/0x4aed03de03897bf0f54337825fa4c876eb12549039dc374bafb13ef47ca2fad1

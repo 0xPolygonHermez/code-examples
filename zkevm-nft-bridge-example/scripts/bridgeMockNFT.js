@@ -1,14 +1,13 @@
 /* eslint-disable no-await-in-loop, no-use-before-define, no-lonely-if, import/no-dynamic-require, global-require */
 /* eslint-disable no-console, no-inner-declarations, no-undef, import/no-unresolved, no-restricted-syntax */
 const path = require('path');
-const fs = require('fs');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const { ethers } = require('hardhat');
 
 const networkIDMainnet = 0;
 const networkIDRollup = 1;
 
-const pathdeployedNFT = path.join(__dirname, `./deployMockNFT_output.json`);
+const pathdeployedNFT = path.join(__dirname, './deployMockNFT_output.json');
 const deployedNFT = require(pathdeployedNFT).nftMockcontract;
 
 async function main() {
@@ -24,7 +23,7 @@ async function main() {
         [deployer] = (await ethers.getSigners());
     }
 
-    const deployedNftBridgeAddress = "0xd3b1d467694d4964E3d777e5f2baCcf9Aee930b0";
+    const deployedNftBridgeAddress = '0xd3b1d467694d4964E3d777e5f2baCcf9Aee930b0';
 
     const nftBridgeFactory = await ethers.getContractFactory('ZkEVMNFTBridge', deployer);
     const nftBridgeContract = await nftBridgeFactory.attach(
@@ -35,12 +34,11 @@ async function main() {
     const destinationNetwork = networkIDRollup;
     const destinationAddress = deployer.address;
 
-
     // Approve tokens
     const nftFactory = await ethers.getContractFactory('ERC721Mock', deployer);
     const nftContract = nftFactory.attach(deployedNFT);
     await (await nftContract.approve(nftBridgeContract.address, tokenId)).wait();
-    console.log("approved token id")
+    console.log('approved token id');
 
     const tx = await nftBridgeContract.bridgeNFT(
         destinationNetwork,
@@ -52,8 +50,7 @@ async function main() {
 
     console.log(await tx.wait());
 
-    console.log("Bridge done succesfully")
-
+    console.log('Bridge done succesfully');
 }
 
 main().catch((e) => {

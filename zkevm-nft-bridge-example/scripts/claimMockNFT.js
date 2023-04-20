@@ -5,13 +5,13 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const { ethers } = require('hardhat');
 
-const mainnetBridgeAddress = "0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe";
-const testnetBridgeAddress = "0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7";
+const mainnetBridgeAddress = '0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe';
+const testnetBridgeAddress = '0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7';
 
-const mekrleProofString = "/merkle-proof"
-const getClaimsFromAcc = "/bridges/"
+const mekrleProofString = '/merkle-proof';
+const getClaimsFromAcc = '/bridges/';
 
-const deployedNftBridgeAddress = "0xd3b1d467694d4964E3d777e5f2baCcf9Aee930b0";
+const deployedNftBridgeAddress = '0xd3b1d467694d4964E3d777e5f2baCcf9Aee930b0';
 
 async function main() {
     const currentProvider = ethers.provider;
@@ -26,31 +26,32 @@ async function main() {
         [deployer] = (await ethers.getSigners());
     }
 
-    let zkEVMBridgeContractAddress, baseURL;
+    let zkEVMBridgeContractAddress;
+    let baseURL;
     const networkName = process.env.HARDHAT_NETWORK;
 
     // Use mainnet bridge address
-    if (networkName == "polygonZKEVMMainnet" || networkName == "mainnet") {
+    if (networkName === 'polygonZKEVMMainnet' || networkName === 'mainnet') {
         zkEVMBridgeContractAddress = mainnetBridgeAddress;
-        baseURL = "https://bridge-api.zkevm-rpc.com"
-    } else if (networkName == "polygonZKEVMTestnet" || networkName == "goerli") {
+        baseURL = 'https://bridge-api.zkevm-rpc.com';
+    } else if (networkName === 'polygonZKEVMTestnet' || networkName === 'goerli') {
         // Use testnet bridge address
         zkEVMBridgeContractAddress = testnetBridgeAddress;
-        baseURL = "https://bridge-api.public.zkevm-test.net"
+        baseURL = 'https://bridge-api.public.zkevm-test.net';
     }
 
     const axios = require('axios').create({
-        baseURL: baseURL
+        baseURL,
     });
 
     const bridgeFactoryZkeEVm = await ethers.getContractFactory('PolygonZkEVMBridge', deployer);
     const bridgeContractZkeVM = bridgeFactoryZkeEVm.attach(zkEVMBridgeContractAddress);
 
     const depositAxions = await axios.get(getClaimsFromAcc + deployedNftBridgeAddress, { params: { limit: 100, offset: 0 } });
-    let depositsArray = depositAxions.data.deposits;
+    const depositsArray = depositAxions.data.deposits;
 
-    if (depositsArray.length == 0) {
-        console.log("Not ready yet!");
+    if (depositsArray.length === 0) {
+        console.log('Not ready yet!');
         return;
     }
 
@@ -58,10 +59,10 @@ async function main() {
         const currentDeposit = depositsArray[i];
         if (currentDeposit.ready_for_claim) {
             const proofAxios = await axios.get(mekrleProofString, {
-                params: { deposit_cnt: currentDeposit.deposit_cnt, net_id: currentDeposit.orig_net }
+                params: { deposit_cnt: currentDeposit.deposit_cnt, net_id: currentDeposit.orig_net },
             });
 
-            const proof = proofAxios.data.proof;
+            const { proof } = proofAxios.data;
             const claimTx = await bridgeContractZkeVM.claimMessage(
                 proof.merkle_proof,
                 currentDeposit.deposit_cnt,
@@ -74,9 +75,11 @@ async function main() {
                 currentDeposit.amount,
                 currentDeposit.metadata,
             );
-            console.log("claim message succesfully send: ", claimTx.hash);
+            console.log('claim message succesfully send: ', claimTx.hash);
             await claimTx.wait();
-            console.log("claim message succesfully mined");
+            console.log('claim message succesfully mined');
+        } else {
+            console.log('Not ready yet!');
         }
     }
 }

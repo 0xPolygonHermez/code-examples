@@ -5,8 +5,8 @@ const fs = require('fs');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const { ethers } = require('hardhat');
 
-const mainnetBridgeAddress = "0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe";
-const testnetBridgeAddress = "0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7";
+const mainnetBridgeAddress = '0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe';
+const testnetBridgeAddress = '0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7';
 
 async function main() {
     // Load deployer
@@ -25,9 +25,9 @@ async function main() {
     const networkName = process.env.HARDHAT_NETWORK;
 
     // Use mainnet bridge address
-    if (networkName == "polygonZKEVMMainnet" || networkName == "mainnet") {
+    if (networkName === 'polygonZKEVMMainnet' || networkName === 'mainnet') {
         zkEVMBridgeContractAddress = mainnetBridgeAddress;
-    } else if (networkName == "polygonZKEVMTestnet" || networkName == "goerli") {
+    } else if (networkName === 'polygonZKEVMTestnet' || networkName === 'goerli') {
         // Use testnet bridge address
         zkEVMBridgeContractAddress = testnetBridgeAddress;
     }
@@ -38,7 +38,7 @@ async function main() {
     );
     await nftBridgeContract.deployed();
 
-    console.log("nftBridge contract succesfully deployed on: ", nftBridgeContract.address);
+    console.log('nftBridge contract succesfully deployed on: ', nftBridgeContract.address);
 
     const outputJson = {
         nftBridgeContract: nftBridgeContract.address,
