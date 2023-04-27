@@ -36,7 +36,7 @@
     "eslint": "^8.36.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-mocha": "^9.0.0",
-    "ethereum-waffle": "^3.4.4",
+    "ethereum-waffle": "^4.0.10",
     "hardhat": "^2.13.0",
     "hardhat-gas-reporter": "^1.0.9",
     "prettier": "^2.8.4",
