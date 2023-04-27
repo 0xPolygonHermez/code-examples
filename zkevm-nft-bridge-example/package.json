@@ -32,7 +32,7 @@
     "@openzeppelin/contracts-upgradeable": "4.8.2",
     "@openzeppelin/hardhat-upgrades": "1.22.1",
     "@openzeppelin/test-helpers": "0.5.16",
-    "dotenv": "^8.6.0",
+    "dotenv": "^16.0.3",
     "eslint": "^8.36.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-mocha": "^9.0.0",
