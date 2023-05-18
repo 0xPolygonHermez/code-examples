@@ -19,9 +19,9 @@ async function main() {
     }
 
     // deploy erc721 token
-    const tokenName = "test NFT";
-    const tokenSymbol = "TNFT";
-    const baseTokenURL = "http://example";
+    const tokenName = 'test NFT';
+    const tokenSymbol = 'TNFT';
+    const baseTokenURL = 'http://example';
 
     const nftFactory = await ethers.getContractFactory('ERC721Mock', deployer);
     const nftContract = await nftFactory.deploy(
@@ -31,7 +31,7 @@ async function main() {
     );
     await nftContract.deployed();
 
-    console.log("nftMockContract contract succesfully deployed on: ", nftContract.address);
+    console.log('nftMockContract contract succesfully deployed on: ', nftContract.address);
 
     // mint nft for owner
     await nftContract.mint(deployer.address);
@@ -43,7 +43,7 @@ async function main() {
         nftMockcontract: nftContract.address,
     };
 
-    const pathOutputJson = path.join(__dirname, `./deployMockNFT_output.json`);
+    const pathOutputJson = path.join(__dirname, './deployMockNFT_output.json');
 
     fs.writeFileSync(pathOutputJson, JSON.stringify(outputJson, null, 1));
 }

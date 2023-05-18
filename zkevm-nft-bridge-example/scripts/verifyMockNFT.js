@@ -2,9 +2,10 @@
 require('dotenv').config();
 const path = require('path');
 const hre = require('hardhat');
+const expect = require('chai');
 
 async function main() {
-    const pathDeployOutputParameters = path.join(__dirname, `./deployMockNFT_output.json`);
+    const pathDeployOutputParameters = path.join(__dirname, './deployMockNFT_output.json');
     const deployOutputParameters = require(pathDeployOutputParameters);
 
     try {
@@ -16,7 +17,7 @@ async function main() {
                 constructorArguments: [
                     deployOutputParameters.tokenName,
                     deployOutputParameters.tokenSymbol,
-                    deployOutputParameters.baseTokenURL
+                    deployOutputParameters.baseTokenURL,
                 ],
             },
         );

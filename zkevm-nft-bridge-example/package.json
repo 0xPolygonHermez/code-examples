@@ -48,8 +48,6 @@
   "scripts": {
     "deploy:nftBridge:goerli": "npx hardhat run deployment/deployNFTBridge.js --network goerli",
     "deploy:nftBridge:mainnet": "npx hardhat run deployment/deployNFTBridge.js --network mainnet",
-    "deploy:nftBridge:polygonZKEVMTestnet": "npx hardhat run deployment/deployNFTBridge.js --network polygonZKEVMTestnet",
-    "deploy:nftBridge:polygonZKEVMMainnet": "npx hardhat run deployment/deployNFTBridge.js --network polygonZKEVMMainnet",
     "verify:nftBridge:goerli": "npx hardhat run deployment/verifyContracts.js --network goerli",
     "verify:nftBridge:mainnet": "npx hardhat run deployment/verifyContracts.js --network mainnet",
     "verify:nftBridge:polygonZKEVMTestnet": "npx hardhat run deployment/verifyContracts.js --network polygonZKEVMTestnet",

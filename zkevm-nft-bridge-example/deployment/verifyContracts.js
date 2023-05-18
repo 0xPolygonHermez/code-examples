@@ -10,7 +10,7 @@ const testnetBridgeAddress = '0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7';
 
 async function main() {
     const networkName = process.env.HARDHAT_NETWORK;
-    const pathDeployOutputParameters = path.join(__dirname, `./${networkName}_output.json`);
+    const pathDeployOutputParameters = path.join(__dirname, './NFTBridge_output.json');
     const deployOutputParameters = require(pathDeployOutputParameters);
 
     let zkEVMBridgeContractAddress;
@@ -36,6 +36,7 @@ async function main() {
             },
         );
     } catch (error) {
+        console.log(error);
         expect(error.message.toLowerCase().includes('already verified')).to.be.equal(true);
     }
 }

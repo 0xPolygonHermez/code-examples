@@ -11,7 +11,8 @@ const testnetBridgeAddress = '0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7';
 const mekrleProofString = '/merkle-proof';
 const getClaimsFromAcc = '/bridges/';
 
-const deployedNftBridgeAddress = '0xd3b1d467694d4964E3d777e5f2baCcf9Aee930b0';
+const pathPingPongOutput = path.join(__dirname, '../deployment/NFTBridge_output.json');
+const deployedNftBridgeAddress = require(pathPingPongOutput).nftBridgeContract;
 
 async function main() {
     const currentProvider = ethers.provider;

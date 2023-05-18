@@ -23,21 +23,22 @@ cp .env.example .env
 Fill `.env` with your `MNEMONIC` or `PVTKEY` and `INFURA_PROJECT_ID`
 If you want to verify the contracts also fill in the `ETHERSCAN_API_KEY` and `ETHERSCAN_ZKEVM_API_KEY`
 
-> Deterministic deployment could be used to have the same address in both networks
-> Usually, this would be performed using a `create2` schema. For simplicity, it is used the same address/nonce in both networks to deploy the contract
+> Deterministic deployment is used to have the same address in both networks
+> This would be performed using a `create2` schema using this typical create2 factory https://etherscan.io/address/0x4e59b44847b379578588920ca78fbf26c0b4956c
+More info in the repo: https://github.com/Arachnid/deterministic-deployment-proxy/tree/master
 
 > Script will detect automatically the `bridgeAddress` to be used depending on the network
 
 To deploy use:`npm run deploy:nftBridge:${network}`
 
-As example for goerli/polygonZKEVMTestnet testnets:
+
+As example for `goerli`/`polygonZKEVMTestnet` testnets:
+This script will deploy on both networks the same contract using the deterministic deployment:
 ```
 npm run deploy:nftBridge:goerli
-npm run deploy:nftBridge:polygonZKEVMTestnet
 ```
 
-Once the deployment is finished, we will find the results on `${networkName}_output.json`
-Double check that both address should be the same.
+Once the deployment is finished, we will find the results on `NFTBridge_output_output.json`
 
 To verify contracts use `npm run verify:nftBridge:${network}`
 ```
@@ -59,7 +60,7 @@ npm run verify:mockNFT:goerli
 ```
 
 - To use the bridge you can use one of the already deployed ones or deploy one yourself following the `Deployment NFT Bridge:Deployment` section
-> If you want to use your own bridge. Go to `scripts/bridgeMockNFT.js` and update the `deployedNftBridgeAddress` with the previously deployed bridgeNFT
+The address of `deployment/NFTBridge_output.json` is used for this examples
 
 ```
 npm run bridge:mockNFT:goerli

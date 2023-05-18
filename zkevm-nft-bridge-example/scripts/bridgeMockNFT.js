@@ -10,6 +10,9 @@ const networkIDRollup = 1;
 const pathdeployedNFT = path.join(__dirname, './deployMockNFT_output.json');
 const deployedNFT = require(pathdeployedNFT).nftMockcontract;
 
+const pathPingPongOutput = path.join(__dirname, '../deployment/NFTBridge_output.json');
+const deployedNftBridgeAddress = require(pathPingPongOutput).nftBridgeContract;
+
 async function main() {
     // Load deployer
     let deployer;
@@ -22,8 +25,6 @@ async function main() {
     } else {
         [deployer] = (await ethers.getSigners());
     }
-
-    const deployedNftBridgeAddress = '0xd3b1d467694d4964E3d777e5f2baCcf9Aee930b0';
 
     const nftBridgeFactory = await ethers.getContractFactory('ZkEVMNFTBridge', deployer);
     const nftBridgeContract = await nftBridgeFactory.attach(
