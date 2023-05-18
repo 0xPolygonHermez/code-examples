@@ -1,0 +1,63 @@
+{
+  "name": "@0xpolygonhermez/code-examples",
+  "description": "ping pong example for polygon zkEVM",
+  "version": "0.1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0xPolygonHermez/code-examples.git"
+  },
+  "main": "index.js",
+  "keywords": [
+    "zkevm",
+    "snark",
+    "polygon",
+    "hermez",
+    "stark",
+    "EVM",
+    "ethereum",
+    "blockchain"
+  ],
+  "author": "0xPolygonHermez",
+  "dependencies": {
+    "axios": "^1.3.5",
+    "chai": "^4.3.7",
+    "ethers": "^5.7.2"
+  },
+  "devDependencies": {
+    "@0xpolygonhermez/zkevm-commonjs": "github:0xPolygonHermez/zkevm-commonjs#develop",
+    "@nomiclabs/hardhat-ethers": "^2.2.2",
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
+    "@nomiclabs/hardhat-waffle": "^2.0.5",
+    "@openzeppelin/contracts": "4.8.2",
+    "@openzeppelin/contracts-upgradeable": "4.8.2",
+    "@openzeppelin/hardhat-upgrades": "1.22.1",
+    "@openzeppelin/test-helpers": "0.5.16",
+    "dotenv": "^8.6.0",
+    "eslint": "^8.36.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-mocha": "^9.0.0",
+    "ethereum-waffle": "^3.4.4",
+    "hardhat": "^2.13.0",
+    "hardhat-gas-reporter": "^1.0.9",
+    "prettier": "^2.8.4",
+    "prettier-plugin-solidity": "^1.1.3",
+    "solc-0.8": "npm:solc@0.8.17",
+    "solidity-coverage": "^0.7.22",
+    "solidity-docgen": "^0.5.17"
+  },
+  "scripts": {
+    "deploy:pingPong:goerli": "npx hardhat run deployment/deployPingPong.js --network goerli",
+    "deploy:pingPong:mainnet": "npx hardhat run deployment/deployPingPong.js --network mainnet",
+    "verify:sender:goerli": "npx hardhat run deployment/verifySender.js --network goerli",
+    "verify:sender:mainnet": "npx hardhat run deployment/verifySender.js --network mainnet",
+    "verify:receiver:polygonZKEVMTestnet": "npx hardhat run deployment/verifyReceiver.js --network polygonZKEVMTestnet",
+    "verify:receiver:polygonZKEVMMainnet": "npx hardhat run deployment/verifyReceiver.js --network polygonZKEVMMainnet",
+    "lint": "npx eslint ./test && npx eslint ./docker/scripts && npx eslint ./deployment && npx eslint ./src",
+    "lint:fix": "npx eslint ./test --fix && npx eslint ./docker/scripts --fix && npx eslint ./deployment --fix && npx eslint ./src --fix",
+    "compile": "npx hardhat compile",
+    "bridge:bridgePing:goerli": "npx hardhat run scripts/bridgePing.js --network goerli",
+    "bridge:bridgePing:mainnet": "npx hardhat run scripts/bridgePing.js --network mainnet",
+    "claim:claimPong:polygonZKEVMTestnet": "npx hardhat run scripts/claimPong.js --network polygonZKEVMTestnet",
+    "claim:claimPong:polygonZKEVMMainnet": "npx hardhat run scripts/claimPong.js --network polygonZKEVMMainnet"
+  }
+}
