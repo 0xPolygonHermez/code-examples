@@ -1,0 +1,30 @@
+{
+  "name": "force-batch-tool",
+  "version": "1.0.0",
+  "description": "provides a simple script to send force batches",
+  "main": "index.js",
+  "scripts": {
+    "eslint": "npx eslint src/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0xPolygonHermez/code-examples.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/0xPolygonHermez/code-examples/issues"
+  },
+  "homepage": "https://github.com/0xPolygonHermez/code-examples#readme",
+  "dependencies": {
+    "@0xpolygonhermez/zkevm-commonjs": "github:0xPolygonHermez/zkevm-commonjs#v1.0.0",
+    "@0xpolygonhermez/zkevm-contracts": "github:0xPolygonHermez/zkevm-contracts#v1.1.0-fork.4",
+    "dotenv": "^16.0.3",
+    "eslint": "^8.41.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-mocha": "^10.1.0",
+    "ethers": "^5.7.2",
+    "yargs": "^17.7.2"
+  }
+}
