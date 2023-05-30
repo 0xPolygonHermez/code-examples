@@ -1,0 +1,14 @@
+{
+    "testnet": {
+        "addressBridge": "0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7",
+        "addressZkEVM": "0xa997cfD539E703921fD1e3Cf25b4c241a27a4c7A",
+        "chainID": 1442,
+        "urlRPC": "https://rpc.public.zkevm-test.net/"
+    },
+    "mainnet": {
+        "addressBridge": "0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe",
+        "addressZkEVM": "0x5132A183E9F3CB7C848b0AAC5Ae0c4f0491B7aB2",
+        "chainID": 1101,
+        "urlRPC": "https://zkevm-rpc.com"
+    }
+}
