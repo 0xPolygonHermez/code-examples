@@ -34,10 +34,10 @@ async function main() {
     console.log('MATIC amount needed to send a force batch: ', ethers.utils.formatUnits(amount, 'ether'), 'MATIC');
 
     // get batchL2Data
-    const { batchL2Data } = JSON.parse(fs.writeFileSync(path.join(__dirname, '../forced-batch-data.json')));
+    const { batchData } = JSON.parse(fs.readFileSync(path.join(__dirname, '../forced-batch-data.json')));
 
     // send force batch to L1
-    const resTx = await contract.forceBatch(batchL2Data, amount);
+    const resTx = await contract.forceBatch(batchData, amount);
     console.log('Forced batch transaction sent');
     console.log('Info tx: ', resTx);
 }
