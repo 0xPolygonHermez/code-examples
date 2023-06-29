@@ -28,7 +28,7 @@ This script will deploy a contract on 2 networks, a message sender and a message
 As example for goerli testnet:
 
 ```
-npm run deploy:PingPong:goerli
+npm run deploy:pingPong:goerli
 ```
 
 In the deployment we will find the results on `pingPong_output.json`
