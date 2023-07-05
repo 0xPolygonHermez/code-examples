@@ -2,7 +2,7 @@
 require('dotenv').config();
 const path = require('path');
 const hre = require('hardhat');
-const expect = require('chai');
+const {expect} = require('chai');
 
 async function main() {
     const pathDeployOutputParameters = path.join(__dirname, './deployMockNFT_output.json');

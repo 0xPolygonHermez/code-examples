@@ -52,13 +52,19 @@ async function main() {
     const depositsArray = depositAxions.data.deposits;
 
     if (depositsArray.length === 0) {
-        console.log('Not ready yet!');
+        console.log('Not deposits yet!');
         return;
     }
 
     for (let i = 0; i < depositsArray.length; i++) {
         const currentDeposit = depositsArray[i];
         if (currentDeposit.ready_for_claim) {
+
+            if (currentDeposit.claim_tx_hash != "") {
+                console.log('already claimed: ', currentDeposit.claim_tx_hash);
+                continue;
+            }
+
             const proofAxios = await axios.get(mekrleProofString, {
                 params: { deposit_cnt: currentDeposit.deposit_cnt, net_id: currentDeposit.orig_net },
             });

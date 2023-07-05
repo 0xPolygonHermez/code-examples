@@ -49,7 +49,7 @@ async function main() {
         true,
     );
 
-    console.log(await tx.wait());
+    console.log((await tx.wait()).transactionHash);
 
     console.log('Bridge done succesfully');
 }
