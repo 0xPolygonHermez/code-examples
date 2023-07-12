@@ -2,7 +2,6 @@
 
 pragma solidity 0.8.17;
 
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./PolygonBridgeLib.sol";
 
 /**
@@ -11,8 +10,6 @@ import "./PolygonBridgeLib.sol";
  * this library.
  */
 abstract contract PolygonERC20BridgeLib is PolygonBridgeLib {
-    using SafeERC20 for IERC20;
-
     /**
      * @param _polygonZkEVMBridge Polygon zkevm bridge address
      * @param _counterpartContract Couterpart contract
