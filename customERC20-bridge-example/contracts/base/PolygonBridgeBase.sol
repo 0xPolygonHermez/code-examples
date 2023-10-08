@@ -9,9 +9,9 @@ import "../polygonZKEVMContracts/interfaces/IPolygonZkEVMBridge.sol";
 /**
  * This contract contains the logic to use the message layer of the bridge to send and receive messages
  * to a counterpart contract deployed on another network.
- * Is needed to deploy 1 contract on each layer that inherits this library.
+ * Is needed to deploy 1 contract on each layer that inherits this base.
  */
-abstract contract PolygonBridgeLib {
+abstract contract PolygonBridgeBase {
     // Zk-EVM Bridge address
     IPolygonZkEVMBridge public immutable polygonZkEVMBridge;
 
@@ -68,16 +68,16 @@ abstract contract PolygonBridgeLib {
         // Can only be called by the bridge
         require(
             msg.sender == address(polygonZkEVMBridge),
-            "TokenWrapped::PolygonBridgeLib: Not PolygonZkEVMBridge"
+            "TokenWrapped::PolygonBridgeBase: Not PolygonZkEVMBridge"
         );
 
         require(
             counterpartContract == originAddress,
-            "TokenWrapped::PolygonBridgeLib: Not counterpart contract"
+            "TokenWrapped::PolygonBridgeBase: Not counterpart contract"
         );
         require(
             counterpartNetwork == originNetwork,
-            "TokenWrapped::PolygonBridgeLib: Not counterpart network"
+            "TokenWrapped::PolygonBridgeBase: Not counterpart network"
         );
 
         _onMessageReceived(data);
