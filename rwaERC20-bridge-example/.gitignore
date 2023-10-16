@@ -1,0 +1,16 @@
+coverage.json
+.env
+cache
+artifacts
+build
+yarn.lock
+node_modules
+coverage.json
+package-lock.json
+coverage
+.coverage_*
+.openzeppelin
+.vscode/launch.json
+deployment/*_output.json
+scripts/*_output.json
+*.ignore/
