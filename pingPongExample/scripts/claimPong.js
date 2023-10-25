@@ -7,6 +7,7 @@ const { ethers } = require('hardhat');
 
 const mainnetBridgeAddress = '0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe';
 const testnetBridgeAddress = '0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7';
+const zkAstarBridgeAddress = '0xA34BBAf52eE84Cd95a6d5Ac2Eab9de142D4cdB53';
 
 const mekrleProofString = '/merkle-proof';
 const getClaimsFromAcc = '/bridges/';
@@ -32,13 +33,11 @@ async function main() {
     const networkName = process.env.HARDHAT_NETWORK;
 
     // Use mainnet bridge address
-    if (networkName === 'polygonZKEVMMainnet' || networkName === 'mainnet') {
-        zkEVMBridgeContractAddress = mainnetBridgeAddress;
-        baseURL = 'https://bridge-api.zkevm-rpc.com';
-    } else if (networkName === 'polygonZKEVMTestnet' || networkName === 'goerli') {
-        // Use testnet bridge address
-        zkEVMBridgeContractAddress = testnetBridgeAddress;
-        baseURL = 'https://bridge-api.public.zkevm-test.net';
+    if (networkName === 'zkastar' ) {
+        zkEVMBridgeContractAddress = zkAstarBridgeAddress;
+        baseURL = 'https://bridge-api.zkatana.gelato.digital';
+    } else {
+        throw new Error('Network not supported');
     }
 
     const axios = require('axios').create({
@@ -80,7 +79,7 @@ async function main() {
             await claimTx.wait();
             console.log('claim message succesfully mined');
         } else {
-            console.log('bridge not ready for claim');
+            console.log('bridge not ready for claim. It requires >32 blocks confirmed on L1');
         }
     }
 }

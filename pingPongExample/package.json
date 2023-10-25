@@ -46,18 +46,8 @@
     "solidity-docgen": "^0.5.17"
   },
   "scripts": {
-    "deploy:pingPong:goerli": "npx hardhat run deployment/deployPingPong.js --network goerli",
-    "deploy:pingPong:mainnet": "npx hardhat run deployment/deployPingPong.js --network mainnet",
-    "verify:sender:goerli": "npx hardhat run deployment/verifySender.js --network goerli",
-    "verify:sender:mainnet": "npx hardhat run deployment/verifySender.js --network mainnet",
-    "verify:receiver:polygonZKEVMTestnet": "npx hardhat run deployment/verifyReceiver.js --network polygonZKEVMTestnet",
-    "verify:receiver:polygonZKEVMMainnet": "npx hardhat run deployment/verifyReceiver.js --network polygonZKEVMMainnet",
-    "lint": "npx eslint ./test && npx eslint ./docker/scripts && npx eslint ./deployment && npx eslint ./src",
-    "lint:fix": "npx eslint ./test --fix && npx eslint ./docker/scripts --fix && npx eslint ./deployment --fix && npx eslint ./src --fix",
-    "compile": "npx hardhat compile",
-    "bridge:bridgePing:goerli": "npx hardhat run scripts/bridgePing.js --network goerli",
-    "bridge:bridgePing:mainnet": "npx hardhat run scripts/bridgePing.js --network mainnet",
-    "claim:claimPong:polygonZKEVMTestnet": "npx hardhat run scripts/claimPong.js --network polygonZKEVMTestnet",
-    "claim:claimPong:polygonZKEVMMainnet": "npx hardhat run scripts/claimPong.js --network polygonZKEVMMainnet"
+    "deploy:pingPong": "npx hardhat run deployment/deployPingPong.js --network sepolia",
+    "bridge:bridgePing": "npx hardhat run scripts/bridgePing.js --network sepolia",
+    "claim:claimPong": "npx hardhat run scripts/claimPong.js --network zkastar"
   }
 }

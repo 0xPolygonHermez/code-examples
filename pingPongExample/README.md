@@ -16,30 +16,22 @@ npm i
 cp .env.example .env
 ```
 
-Fill `.env` with your `MNEMONIC` or `PVTKEY` and `INFURA_PROJECT_ID`
-If you want to verify the contracts also fill the `ETHERSCAN_API_KEY` and `ETHERSCAN_ZKEVM_API_KEY`
+Fill `.env` with your `MNEMONIC` OR `PVTKEY`.
 
-To deploy use:`deploy:pingPong:${network}`, currently is supported `goerli` and `mainnet`.
+To deploy use:`deploy:pingPong`, currently is supported `sepolia` and `zKatana`.
 This script will deploy a contract on 2 networks, a message sender and a message receiver:
 
-- `PingSender` on `mainnet`/`goerli`
-- `PingReceiver` on `polygonZKEVMTestnet`/`polygonZKEVMMainnet`
+- `PingSender` on `sepolia`
+- `PingReceiver` on `zKatana`
 
-As example for goerli testnet:
+As example for sepolia testnet:
 
 ```
-npm run deploy:pingPong:goerli
+npm run deploy:pingPong
 ```
 
 In the deployment we will find the results on `pingPong_output.json`
 
-To verify contracts use `npm run verify:sender:${network}` and `npm run verify:receiver:${network}`
-
-```
-npm run verify:sender:goerli
-npm run verify:receiver:polygonZKEVMTestnet
-
-```
 
 ## Using the bridge
 
@@ -48,13 +40,13 @@ In order to use the bridge, there are already provided some scripts:
 - Send a message using:
 
 ```
-npm run bridge:bridgePing:goerli
+npm run bridge:bridgePing
 ```
 
 - Now we have to wait until the message is forwarded to L2, there's the final script that will check it and if it's ready will actually claim the NFT in the other layer:
 
 ```
-npm run claim:claimPong:polygonZKEVMTestnet
+npm run claim:claimPong
 
 ```
 

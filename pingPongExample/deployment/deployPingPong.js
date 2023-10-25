@@ -5,8 +5,7 @@ const fs = require('fs');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const { ethers } = require('hardhat');
 
-const mainnetBridgeAddress = '0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe';
-const testnetBridgeAddress = '0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7';
+const sepoliaBridgeAddress = '0xA34BBAf52eE84Cd95a6d5Ac2Eab9de142D4cdB53';
 
 async function main() {
     let zkEVMProvider;
@@ -14,14 +13,9 @@ async function main() {
 
     const networkName = process.env.HARDHAT_NETWORK;
 
-    // Use mainnet bridge address
-    if (networkName === 'mainnet') {
-        zkEVMBridgeContractAddress = mainnetBridgeAddress;
-        zkEVMProvider = new ethers.providers.JsonRpcProvider('https://zkevm-rpc.com');
-    } else if (networkName === 'goerli') {
-        // Use testnet bridge address
-        zkEVMBridgeContractAddress = testnetBridgeAddress;
-        zkEVMProvider = new ethers.providers.JsonRpcProvider('https://rpc.public.zkevm-test.net');
+    if (networkName === 'sepolia') {
+        zkEVMBridgeContractAddress = sepoliaBridgeAddress;
+        zkEVMProvider = new ethers.providers.JsonRpcProvider('https://rpc.zkatana.gelato.digital');
     } else {
         throw new Error('Network not supported');
     }
@@ -40,7 +34,7 @@ async function main() {
         [deployer] = (await ethers.getSigners());
     }
 
-    // Deploy Ping sender on goerli / zkevm mainnet
+    // Deploy Ping sender on sepolia
     const pingSenderFactory = await ethers.getContractFactory('PingSender', deployer);
     const pingSenderContract = await pingSenderFactory.deploy(
         zkEVMBridgeContractAddress,
@@ -49,7 +43,7 @@ async function main() {
 
     console.log('Ping sender deployed on: ', pingSenderContract.address);
 
-    // Deploy Ping receiver on zkevm testnet /zkevm mainnet
+    // Deploy Ping receiver on zKatana
     const pingREceiverFactory = await ethers.getContractFactory('PingReceiver', deployerZkEVM);
     const pingReceiverContract = await pingREceiverFactory.deploy(
         zkEVMBridgeContractAddress,
