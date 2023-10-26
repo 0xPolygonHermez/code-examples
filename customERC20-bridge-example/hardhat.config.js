@@ -65,8 +65,8 @@ module.exports = {
     ]
   },
   networks: {
-    mainnet: {
-      url: `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+    sepolia: {
+      url: `https://ethereum-sepolia.publicnode.com`,
       accounts: {
         mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
         path: "m/44'/60'/0'/0",
@@ -74,63 +74,9 @@ module.exports = {
         count: 20,
       },
     },
-    ropsten: {
-      url: `https://ropsten.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-      accounts: {
-        mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
-        path: "m/44'/60'/0'/0",
-        initialIndex: 0,
-        count: 20,
-      },
-    },
-    goerli: {
-      url: `https://goerli.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-      accounts: {
-        mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
-        path: "m/44'/60'/0'/0",
-        initialIndex: 0,
-        count: 20,
-      },
-    },
-    rinkeby: {
-      url: `https://rinkeby.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-      accounts: {
-        mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
-        path: "m/44'/60'/0'/0",
-        initialIndex: 0,
-        count: 20,
-      },
-    },
-    localhost: {
-      url: 'http://127.0.0.1:8545',
-      accounts: {
-        mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
-        path: "m/44'/60'/0'/0",
-        initialIndex: 0,
-        count: 20,
-      },
-    },
-    hardhat: {
-      initialDate: '0',
-      allowUnlimitedContractSize: true,
-      accounts: {
-        mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
-        path: "m/44'/60'/0'/0",
-        initialIndex: 0,
-        count: 20,
-      },
-    },
-    polygonZKEVMTestnet: {
-      url: "https://rpc.public.zkevm-test.net",
-      accounts: {
-        mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
-        path: "m/44'/60'/0'/0",
-        initialIndex: 0,
-        count: 20,
-      },
-    },
-    polygonZKEVMMainnet: {
-      url: "https://zkevm-rpc.com",
+    zkastar: {
+      url: `https://rpc.zkatana.gelato.digital`,
+      chainId: 1261120,
       accounts: {
         mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
         path: "m/44'/60'/0'/0",

@@ -4,8 +4,8 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const { ethers } = require('hardhat');
 
-const networkIDMainnet = 0;
-const networkIDRollup = 1;
+const networkIDSepolia = 0;
+const networkIDzk = 1;
 
 const pathdeployeERC20Bridge = path.join(__dirname, '../deployment/ERC20Bridge_output.json');
 const deploymentERC20Bridge = require(pathdeployeERC20Bridge);
@@ -27,14 +27,14 @@ async function main() {
     let destinationNetwork; let
         ERC20BridgeContractAddress; let erc20TokenAddress;
 
-    if (networkName === 'polygonZKEVMTestnet' || networkName === 'polygonZKEVMMainnet') {
-        destinationNetwork = networkIDMainnet;
+    if (networkName === 'zkatana') {
+        destinationNetwork = networkIDSepolia;
         erc20TokenAddress = deploymentERC20Bridge.erc20zkEVMToken;
         ERC20BridgeContractAddress = deploymentERC20Bridge.ERC20BridgezkEVM;
     }
 
-    if (networkName === 'mainnet' || networkName === 'goerli') {
-        destinationNetwork = networkIDRollup;
+    if (networkName === 'sepolia' ) {
+        destinationNetwork = networkIDzk;
         erc20TokenAddress = deploymentERC20Bridge.erc20MainnetToken;
         ERC20BridgeContractAddress = deploymentERC20Bridge.ERC20BridgeMainnet;
     }

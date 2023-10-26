@@ -5,8 +5,8 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const { ethers } = require('hardhat');
 
-const mainnetBridgeAddress = '0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe';
-const testnetBridgeAddress = '0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7';
+const sepoliaBridgeAddress = '0xA34BBAf52eE84Cd95a6d5Ac2Eab9de142D4cdB53';
+const zkatanaBridgeAddress = '0xA34BBAf52eE84Cd95a6d5Ac2Eab9de142D4cdB53';
 
 const mekrleProofString = '/merkle-proof';
 const getClaimsFromAcc = '/bridges/';
@@ -32,14 +32,10 @@ async function main() {
     const networkName = process.env.HARDHAT_NETWORK;
 
     // Use mainnet bridge address
-    if (networkName === 'polygonZKEVMMainnet' || networkName === 'mainnet') {
-        zkEVMBridgeContractAddress = mainnetBridgeAddress;
-        baseURL = 'https://bridge-api.zkevm-rpc.com';
-    } else if (networkName === 'polygonZKEVMTestnet' || networkName === 'goerli') {
-        // Use testnet bridge address
-        zkEVMBridgeContractAddress = testnetBridgeAddress;
-        baseURL = 'https://bridge-api.public.zkevm-test.net';
-    }
+
+    zkEVMBridgeContractAddress = sepoliaBridgeAddress;
+    baseURL = 'https://bridge-api.zkatana.gelato.digital';
+
 
     const axios = require('axios').create({
         baseURL,
@@ -49,13 +45,10 @@ async function main() {
     const bridgeContractZkeVM = bridgeFactoryZkeEVm.attach(zkEVMBridgeContractAddress);
 
     let ERC20BridgeContractAddress;
-    if (networkName === 'polygonZKEVMTestnet' || networkName === 'polygonZKEVMMainnet') {
+    if (networkName === 'zkastar' || networkName === 'sepolia') {
         ERC20BridgeContractAddress = deploymentERC20Bridge.ERC20BridgezkEVM;
     }
 
-    if (networkName === 'mainnet' || networkName === 'goerli') {
-        ERC20BridgeContractAddress = deploymentERC20Bridge.ERC20BridgeMainnet;
-    }
 
     const depositAxions = await axios.get(getClaimsFromAcc + ERC20BridgeContractAddress, { params: { limit: 100, offset: 0 } });
     const depositsArray = depositAxions.data.deposits;
