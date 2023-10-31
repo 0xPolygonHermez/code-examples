@@ -29,7 +29,7 @@ As example for `goerli`/`polygonZKEVMTestnet` testnets:
 This script will deploy on both networks the same contract using the deterministic deployment:
 
 ```
-deploy:erc20Bridge:goerli
+npm run deploy:erc20Bridge:goerli
 ```
 
 Once the deployment is finished, we will find the results on `ERC20Bridge_output.json`
